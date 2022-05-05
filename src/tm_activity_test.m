@@ -20,6 +20,7 @@ A_km = 0;%1;%20*200;%4;%2;
 w_km = 10;
 i_km = 0;
 Vm = 70;
+pst = 0;
 spk = 1;
 ts=0.5; % time step
 t_total = 1000;
@@ -37,22 +38,16 @@ for t=1:length(simdur)
 	i_cs=i_cs*g_cs;
     
     % Keivan's methods
-    %u_km=u_km+((-u_km/tau_u_km)+(cap_u_km*(1-u_km)).*spk);
-    %x_km=x_km+(((1-x_km-A_km)/tau_x_km)-u_km.*x_km.*spk);
-    %A_km=A_km+ts*(-A_km/tau_d_km+u_km.*x_km);
-	%A_km=A_km+ts*(-A_km/tau_d_km+u_km.*x_km);
-    %i_km=i_km*g_km*A_km*w_km;
-    if t==0
-    	u_km=u_km+cap_u_km*(1-u_km);
-    	A_km=A_km+u_km*x_km;
-    	x_km=x_km-u_km*x_km;
-    else
-    	u_km=u_km*exp(-t/tau_u_km);
-    	A_km=A_km*exp(-t/tau_d_km);
-        A_hat=(A_km*tau_d_km)/(tau_d_km-tau_x_km);
-        x_km=1-(A_hat*exp(-t/tau_d_km))-(1-u_km-A_hat)*exp(-t/tau_x_km);
-    end
+    deltat = pst-t;
+    tau1r = tau_d_km / (tau_d_km-tau_x_km);
+    y_ = A_km * exp(deltat/tau_d_km);
+    x_ = 1 + (x_km-1+tau1r*A_km)*exp(deltat/tau_x_km) - tau1r*y_;
+    u_ = u_km * exp(deltat/tau_u_km);
+    u_km = u_ + (cap_u_km * (1-u_));
+    A_km = y_ + u_km*x_;
+    x_km = x_ - u_km*x_;
     i_km=g_km*A_km*Vm;
+    pst = t;
     
 	u_all_cs(end+1)=u_cs;x_all_cs(end+1)=x_cs;i_all_cs(end+1)=i_cs;
     u_all_km(end+1)=u_km;x_all_km(end+1)=x_km;i_all_km(end+1)=i_km;
