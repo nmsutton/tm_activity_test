@@ -13,7 +13,7 @@ cap_u_km = 0.25;%0.005;%0.2;%0.1119;%0.135;%0.1119;
 tau_u_km = 25;%100;%25;%60;%24;
 tau_x_km = 600;%1000;%500;%80;%40;%80;%40;%70;%200;%120;
 tau_d_km = 5;%3.0;%5;%24;%28;%20;%28;%38.5;%23;%18;%15;
-g_km = 3;%1;%1.0238;%1.0315;%1.0325;
+g_km = 19;%12;%3;%1;%1.0238;%1.0315;%1.0325;
 u_km = 0;
 x_km = 1;
 A_km = 0;%1;%20*200;%4;%2;
@@ -49,23 +49,30 @@ for t=1:length(simdur)
     % Keivan's methods
     u_km=u_km+((-u_km/tau_u_km)+(cap_u_km*(1-u_km)).*spk);
     x_km=x_km+(((1-x_km-A_km)/tau_x_km)-u_km.*x_km.*spk);
-    %A_km=A_km+ts*((-i_km/tau_d_km)+u_km.*x_km.*spk);
-    %A_km=A_km+ts*((-i_km/tau_d_km)+u_km.*x_km.*spk);
     A_km=A_km+((-A_km/tau_d_km)+u_km.*x_km.*spk);
-    %i_km=i_km*g_km;
     i_km=g_km*A_km*Vm;
+
+    %A_km=A_km+ts*((-i_km/tau_d_km)+u_km.*x_km.*spk);
+    %A_km=A_km+ts*((-i_km/tau_d_km)+u_km.*x_km.*spk);
+    %i_km=i_km*g_km;
+    %i_km=g_km*A_km*Vm;
     %i_km=i_km+ts*(g_km*A_km*Vm);
     %i_km=i_km+ts*(g_km*A_km*Vm);
     for s=1:length(steps)
-    %    i_km=i_km+ts_km*(g_km*A_km*Vm);       
+    %    i_km=i_km+ts_km*(g_km*A_km*Vm);  
+    %    u_km=u_km+ts*(((-u_km/tau_u_km)+(cap_u_km*(1-u_km)).*spk));
+    %    x_km=x_km+ts*((((1-x_km-A_km)/tau_x_km)-u_km.*x_km.*spk));
+    %    A_km=A_km+ts*(((-A_km/tau_d_km)+u_km.*x_km.*spk));
+    %    i_km=i_km+ts*(g_km*A_km*Vm);        
     end
+    %i_km=g_km*A_km*Vm;
     %deltat = pst-t;
     %g = g_km*A_km;
     %i_km=g*exp(deltat/tau_d_km)*Vm;
 
     if mod((t+fst_spk_km),20)==0
         spk = 1;
-        pst = t;
+        %pst = t;
     else
         spk = 0;
     end
