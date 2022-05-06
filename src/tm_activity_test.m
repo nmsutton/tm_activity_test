@@ -9,24 +9,24 @@ x_cs = 1;
 A_cs = 20;%20*200;%4;%2;
 i_cs = 0;
 % Keivan
-cap_u_km = 0.25;%0.005;%0.2;%0.1119;%0.135;%0.1119;
-tau_u_km = 25;%100;%25;%60;%24;
-tau_x_km = 600;%1000;%500;%80;%40;%80;%40;%70;%200;%120;
-tau_d_km = 5;%3.0;%5;%24;%28;%20;%28;%38.5;%23;%18;%15;
-g_km = 19;%12;%3;%1;%1.0238;%1.0315;%1.0325;
+cap_u_km = 0.2229;%0.25;%0.005;%0.2;%0.1119;%0.135;%0.1119;
+tau_u_km = 18.86;%25;%100;%25;%60;%24;tf
+tau_x_km = 678.4;%600;%1000;%500;%80;%40;%80;%40;%70;%200;%120;tr
+tau_d_km = 5.966;%5;%3.0;%5;%24;%28;%20;%28;%38.5;%23;%18;%15;
+g_km = 6.333*1.475;%*3;%12;%3;%1;%1.0238;%1.0315;%1.0325;
 u_km = 0;
 x_km = 1;
 A_km = 0;%1;%20*200;%4;%2;
 %w_km = 10;
 i_km = 0;
-Vm = -80;
+Vm = 70;%-80;
 pst = 0;
 spk = 0;
-fst_spk_km = 10;
+first_spk_km = 0; % first spike start time
 ts=0.5; % time step
 ts_km=0.025;%.5;%0.025; % time step
 steps=40;%2;%40;
-t_total = 200;%1000;
+t_total = 201;%1000;
 simdur = linspace(0,t_total,t_total);
 u_all_cs=[]; u_all_km=[];
 x_all_cs=[]; x_all_km=[];
@@ -70,9 +70,11 @@ for t=1:length(simdur)
     %g = g_km*A_km;
     %i_km=g*exp(deltat/tau_d_km)*Vm;
 
-    if mod((t+fst_spk_km),20)==0
+    if mod((t+first_spk_km),20)==0
         spk = 1;
         %pst = t;
+    elseif t == 1
+        spk = 1;
     else
         spk = 0;
     end
