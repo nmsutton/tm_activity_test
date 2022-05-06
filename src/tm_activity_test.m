@@ -8,23 +8,24 @@ u_cs = 0;
 x_cs = 1;
 A_cs = 200;%6.333;%200;
 i_cs = 0;
-ts=0.5; % time step
+ts_cs=0.5; % time step
 % Keivan
 cap_u_km = 0.25;
 tau_u_km = 25;
 tau_x_km = 600;
 tau_d_km = 5;
-g_km = 6.333*3;%3;%6.333*3;
+g_km = 3;%6.333*3;
 u_km = 0;
 x_km = 1;
 A_km = 0;
 i_km = 0;
-Vm = -80;%200;%-80;
+ts_km=1.0; % time step
+Vm = 200;%-80;
 % general
 spk = 0;
 first_spk_km = 10; % first spike start time
-ISI=20;%50;%;20; % inter spike interval in milliseconds
-t_total = 200;%1000;
+ISI=50;%;20; % inter spike interval in milliseconds
+t_total = 600;%1000;
 simdur = linspace(0,t_total,t_total);
 u_all_cs=[]; u_all_km=[];
 x_all_cs=[]; x_all_km=[];
@@ -32,46 +33,24 @@ i_all_cs=[]; i_all_km=[]; a_all_km=[];
 
 for t=1:length(simdur)
     % CARLsim's methods
-	%u_cs=u_cs+((-u_cs/tau_u_cs)+(cap_u_cs*(1-u_cs)).*spk);
-	%x_cs=x_cs+(((1-x_cs)/tau_x_cs)-u_cs.*x_cs.*spk);
-    %i_cs=(-i_cs/tau_d_cs+A_cs.*u_cs.*x_cs-spk)*g_cs;
-    ts = 0.025;
-    for i=1:40
-        u_cs=u_cs+ts*((-u_cs/tau_u_cs)+(cap_u_cs*(1-u_cs)).*spk);
-        x_cs=x_cs+ts*(((1-x_cs)/tau_x_cs)-u_cs.*x_cs.*spk);
-        i_cs=i_cs+ts*(-i_cs/tau_d_cs+A_cs.*u_cs.*x_cs-spk)*g_cs;
+    for i=1:(1/ts_cs)
+        u_cs=u_cs+ts_cs*((-u_cs/tau_u_cs)+(cap_u_cs*(1-u_cs)).*spk);
+        x_cs=x_cs+ts_cs*(((1-x_cs)/tau_x_cs)-u_cs.*x_cs.*spk);
+        i_cs=i_cs+ts_cs*(-i_cs/tau_d_cs+A_cs.*u_cs.*x_cs-spk)*g_cs;
     end   
 
     % Keivan's methods
-    %{
-    u_km=u_km+((-u_km/tau_u_km)+(cap_u_km*(1-u_km)).*spk);
-    x_km=x_km+(((1-x_km-A_km)/tau_x_km)-u_km.*x_km.*spk);
-    A_km=A_km+((-A_km/tau_d_km)+u_km.*x_km.*spk);
-    i_km=g_km*A_km*Vm;
-    %}
-    ts = 0.5;%0.025; 
     i_km = 0;
-    for i=1:2;%40;%40        
-        u_km=u_km+ts*((-u_km/tau_u_km)+(cap_u_km*(1-u_km)).*spk);
-        x_km=x_km+ts*(((1-x_km-A_km)/tau_x_km)-u_km.*x_km.*spk);
-        A_km=A_km+ts*((-A_km/tau_d_km)+u_km.*x_km.*spk);
-        i_km=i_km+ts*(g_km*A_km*Vm);
+    for i=1:(1/ts_km)       
+        u_km=u_km+ts_km*((-u_km/tau_u_km)+(cap_u_km*(1-u_km)).*spk);
+        x_km=x_km+ts_km*(((1-x_km-A_km)/tau_x_km)-u_km.*x_km.*spk);
+        A_km=A_km+ts_km*((-A_km/tau_d_km)+u_km.*x_km.*spk);
+        i_km=i_km+ts_km*(g_km*A_km*Vm);
     end
-    %ts = 0.025;
-    %i_km = 0;
-    for i=1:40
-    %    i_km=i_km+ts*(g_km*A_km*Vm);
-        if t == 42
-    %    fprintf("t:%d i_km:%f g_km:%f A_km:%f Vm:%f\n",t,i_km,g_km,A_km,Vm);
-        end
-    end
-    %i_km=g_km*A_km*Vm;
-    %fprintf("t:%d i_km:%f g_km:%f A_km:%f Vm:%f\n",t,i_km,g_km,A_km,Vm);
 
     % create spikes at ISI rate
     if mod((t+first_spk_km),ISI)==0
         spk = 1;
-        %pst = t;
     elseif t == 1
         %spk = 1;
     else
