@@ -1,3 +1,4 @@
+% Note: this code may be outdated or obsolete
 % CARLsim
 cap_u_cs = 0.25;%0.2;
 tau_u_cs = 25;%20;
