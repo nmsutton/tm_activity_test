@@ -1,3 +1,4 @@
+plot_source="jk_custom" # choose "neuronmonitor" or "jk_custom" for CARLsim data file source
 # Create time points
 Tmin, Tmax, dt = 0, 1000, 0.025  # Step size
 T = np.arange(Tmin, Tmax + dt, dt)
@@ -16,7 +17,10 @@ preNeuronType = "Axo-Axonic"
 s = np.zeros((len(T), 2))
 
 # Create a vector to store spike times
-spike_times = np.array([])
+if plot_source=="neuronmonitor":
+    spike_times = np.array([15, 40, 67, 97, 130, 166, 206, 249, 295, 343, 392, 442, 493, 544, 595, 646, 697, 748, 799, 850, 901, 952])
+if plot_source=="jk_custom":
+    spike_times = np.array([])
 isi_mode_list = np.array([])
 
 
@@ -47,7 +51,9 @@ for t in range(len(T)-1):
     s[t, 0]   = vpeak # add Dirac pulse for visualisation
     s[t+1, 0] = c   # Reset to resting potential
     s[t+1, 1] += d  # Update recovery variable
-    spike_times = np.append(spike_times, math.ceil(t*dt))
+    if plot_source=="jk_custom":
+        spike_times = np.append(spike_times, math.ceil(t*dt))
+    #print(math.floor(t * dt))
 
 v = s[:, 0]
 u = s[:, 1]
@@ -61,11 +67,12 @@ a, b, c, d, k, vr, vt, C, vpeak = 0.00838350334098279, -42.5524776883928, -38.86
 
 # Synaptic Parameters and equations
 synaptic_event_times = list(spike_times)
+print(synaptic_event_times)
 
 # TPM parameters
 g0, tau_d, tau_f, tau_r, Utilization, e_rev = 3.644261648, 10.71107251, 17.20004939, 435.8103009, 0.259914361, -70
 
-tm_model = 'Carlsim'#'Keivan'
+tm_model = 'Keivan'#'Carlsim'#'Keivan'
 
 if tm_model == 'Keivan':
     # in CARLsim there is no change to the g param from the value it is set as in connect()
@@ -198,8 +205,17 @@ u = s[:, 1]
 def sign(lst): 
     return [ -i for i in lst ]
 
+# downsample
+if plot_source=="neuronmonitor":
+    steps = 40 #1/dt
+    dt = 1  # Step size
+    T = np.arange(Tmin, Tmax + dt, dt)
+
 # Compare to CARLsim simulation output
-FH = np.loadtxt("HC_IM_05_26_aac_pyr_I_150pA_fast_1_slow_0.txt")
+if plot_source=="neuronmonitor":
+    FH = np.loadtxt("stp_compare_results.csv")
+elif plot_source=="jk_custom":
+    FH = np.loadtxt("HC_IM_05_26_aac_pyr_I_150pA_fast_1_slow_0.txt")
 I = FH[1::2]
 V = FH[0::2]
 I = sign(I)
@@ -214,6 +230,11 @@ plt.ylabel('Synaptic Current (pA)')
 plt.xlabel('Time (ms)')
 plt.legend(loc = "center right")
 plt.tight_layout()
+
+# downsample
+if plot_source=="neuronmonitor":
+    v = v[0:v.size:steps]
+    I_syn = I_syn[0:len(I_syn):steps]
 
 ## Plot the membrane potential
 ax1 = plt.subplot(211)
@@ -235,6 +256,8 @@ plt.clf()
 # Look at the error between CARLsim and python computed synaptic signal
 I = np.append(I, [I[-1]])
 V = np.append(V, [V[-1]])
+if plot_source=="neuronmonitor":
+    V = np.append(V, [V[-1]])
 
 af = scipy.fft.fft(I_syn)
 bf = scipy.fft.fft(I)
@@ -242,7 +265,10 @@ c = scipy.ifft(af * scipy.conj(bf))
 time_shift = np.argmax(abs(c))
 #         print(time_shift)
 
-I_2 = I[:-1]
+if plot_source=="neuronmonitor":
+    I_2 = I
+if plot_source=="jk_custom":
+    I_2 = I[:-1]
 I_2 = I_2[::int(1/dt)]
 I_syn_2 = I_syn[0+time_shift:]
 I_syn_2 = I_syn_2[::int(1/dt)]
