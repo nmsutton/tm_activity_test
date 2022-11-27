@@ -1,4 +1,4 @@
-plot_source="jk_custom" # choose "neuronmonitor" or "jk_custom" for CARLsim data file source
+plot_source="neuronmonitor" # choose "neuronmonitor" or "jk_custom" for CARLsim data file source
 # Create time points
 Tmin, Tmax, dt = 0, 1000, 0.025  # Step size
 T = np.arange(Tmin, Tmax + dt, dt)
@@ -256,8 +256,8 @@ plt.clf()
 # Look at the error between CARLsim and python computed synaptic signal
 I = np.append(I, [I[-1]])
 V = np.append(V, [V[-1]])
-if plot_source=="neuronmonitor":
-    V = np.append(V, [V[-1]])
+#if plot_source=="neuronmonitor":
+#    V = np.append(V, [V[-1]])
 
 af = scipy.fft.fft(I_syn)
 bf = scipy.fft.fft(I)
@@ -265,10 +265,11 @@ c = scipy.ifft(af * scipy.conj(bf))
 time_shift = np.argmax(abs(c))
 #         print(time_shift)
 
-if plot_source=="neuronmonitor":
-    I_2 = I
-if plot_source=="jk_custom":
-    I_2 = I[:-1]
+#if plot_source=="neuronmonitor":
+#    I_2 = I
+#if plot_source=="jk_custom":
+#    I_2 = I[:-1]
+I_2 = I[:-1]
 I_2 = I_2[::int(1/dt)]
 I_syn_2 = I_syn[0+time_shift:]
 I_syn_2 = I_syn_2[::int(1/dt)]
