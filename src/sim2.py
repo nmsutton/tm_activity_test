@@ -87,8 +87,8 @@ def synaptic_event(delta_t_, g, g0, tau_d_, tau_r_, tau_f_, utilization, x0, y0,
     else:
         # Carlsim's TM Model
         A  = 1 / Utilization # this seems to serve the same function as g0 /= Utilization would
-        u_ = u0 + ((-u0/tau_f_) + utilization * (1 - u0))
-        x_ = x0 + ((1 - x0)/tau_r_ - u_ * x0)
+        u_ = u0 + utilization * (1 - u0)
+        x_ = x0 - u_ * x0
         #print("%f + %f * (%f * %f * %f)" % (g, g0, A, u_, x_))        
         g  = g + g0 * (A * u_ * x0)
         u0 = u_
