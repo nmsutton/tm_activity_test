@@ -1,0 +1,4 @@
+results/*
+stp_compare_results.csv
+stp_compare_spikes.csv
+build_dir/
