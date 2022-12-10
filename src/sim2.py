@@ -165,7 +165,6 @@ for t in range(len(T) - 1):
     if next_synaptic_event_time <= time:
         inter_event_time = next_synaptic_event_time - synaptic_event_time
         g, x0, y0, u0 = synaptic_event(inter_event_time, g, g0, tau_d, tau_r, tau_f, Utilization, x0, y0, u0, e_syn)
-        # NS addition: shouldn't g be a rolling total rather than equal to g here? Such would accomidate past g from prior spikes?
         # NS updated g for carlsim calcs
         #print(g, time, synaptic_event_time, next_synaptic_event_time)
         print("t:%d I:%.3f\tg:%.3f\tu:%.3f\tx:%.3f\tv:%.3f\tsynaptic spike" % (time,I,g,u0,x0,e_syn))
